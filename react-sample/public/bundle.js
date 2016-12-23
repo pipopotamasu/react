@@ -22470,18 +22470,29 @@
 	
 	function TodoList(props) {
 	  var list = props.todos.map(function (todo, i) {
-	    return _react2.default.createElement(
-	      'li',
-	      { key: i },
-	      todo
-	    );
+	    return _react2.default.createElement(TodoTask, { todo: todo, onToggle: props.onToggle });
 	  });
-	  console.log({ list: list });
 	
 	  return _react2.default.createElement(
 	    'ul',
 	    null,
 	    list
+	  );
+	}
+	
+	function TodoTask(props) {
+	  var todoText = props.todo.isCompleted ? _react2.default.createElement(
+	    's',
+	    null,
+	    props.todo.text
+	  ) : props.todo.text;
+	  return _react2.default.createElement(
+	    'li',
+	    { key: props.no },
+	    _react2.default.createElement('input', { type: 'checkbox', onChange: function onChange(e) {
+	        props.onToggle(props.todo);
+	      } }),
+	    todoText
 	  );
 	}
 	
@@ -22497,13 +22508,36 @@
 	      todos: []
 	    };
 	    _this2.addTodo = _this2.addTodo.bind(_this2);
+	    _this2.toggleTodo = _this2.toggleTodo.bind(_this2);
 	    return _this2;
 	  }
 	
 	  _createClass(TodoApp, [{
 	    key: 'addTodo',
-	    value: function addTodo(todo) {
+	    value: function addTodo(todoText) {
+	      console.log(this.state.todos);
+	      var todo = {
+	        text: todoText,
+	        isCompleted: false,
+	        no: this.state.todos.length + 1
+	      };
+	
 	      this.setState({ todos: this.state.todos.concat(todo) });
+	    }
+	  }, {
+	    key: 'toggleTodo',
+	    value: function toggleTodo(toggledTodo) {
+	      console.log(this.state.todos);
+	      var newTodos = this.state.todos.map(function (todo, i) {
+	        if (todo.no == toggledTodo.no) {
+	          toggledTodo.isCompleted = !toggledTodo.isCompleted;
+	          return toggledTodo;
+	        }
+	        return todo;
+	      });
+	
+	      console.log(newTodos);
+	      this.setState({ todos: newTodos });
 	    }
 	  }, {
 	    key: 'render',
@@ -22517,7 +22551,7 @@
 	          'Todo'
 	        ),
 	        _react2.default.createElement(TodoForm, { onAdd: this.addTodo }),
-	        _react2.default.createElement(TodoList, { todos: this.state.todos })
+	        _react2.default.createElement(TodoList, { todos: this.state.todos, onToggle: this.toggleTodo })
 	      );
 	    }
 	  }]);
